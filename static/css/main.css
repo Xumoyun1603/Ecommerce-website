@@ -1,0 +1,20 @@
+body {
+    height: 100%;
+    padding-top: 6.5rem;
+}
+
+.image_height {
+    height: 250px;
+}
+
+.hidden{
+	display: none!important;
+}
+
+.none {
+    display: none;
+}
+
+.show {
+    display: flex;
+}
