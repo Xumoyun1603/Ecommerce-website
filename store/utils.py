@@ -51,7 +51,18 @@ def cookieCart(request):
 
 def cartData(request):
     if request.user.is_authenticated:
-        customer = request.user.customer
+        customer, created = Customer.objects.get_or_create(
+            user=request.user
+        )
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+        email = user.email
+        name = user.username
+        customer.name = name
+        customer.email = email
+        customer.save()
+
+        print(request.user.id)
         print(customer)
         order, created = Order.objects.get_or_create(
             customer=customer, complete=False
@@ -65,3 +76,34 @@ def cartData(request):
         items = cookieData['items']
 
     return {'items': items, 'order': order, 'cartItems': cartItems}
+
+
+def guestOrder(request, data):
+    name = data['form']['name']
+    email = data['form']['email']
+
+    cookieData = cookieCart(request)
+    items = cookieData['items']
+
+    customer, created = Customer.objects.get_or_create(
+        email=email,
+    )
+
+    customer.name = name
+    customer.save()
+
+    order = Order.objects.create(
+        customer=customer,
+        complete=False,
+    )
+
+    for item in items:
+        print("qani:   ", item)
+        product = Product.objects.get(id=item['product']['id'])
+        orderItem = OrderItem.objects.create(
+            product=product,
+            order=order,
+            quantity=item['quantity'],
+        )
+    return customer, order
+

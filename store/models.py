@@ -8,9 +8,11 @@ class Customer(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, null=True, blank=True
     )
+    name = models.CharField(max_length=200, null=True)
+    email = models.EmailField(null=True)
 
     def __str__(self):
-        return self.user.username
+        return self.name or self.user.username
 
 
 class Category(models.Model):
@@ -56,6 +58,9 @@ class Order(models.Model):
     date_orderd = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False, null=True, blank=False)
     transaction_id = models.CharField(max_length=200, null=True)
+
+    class Meta:
+        unique_together = ['customer', 'date_orderd', 'complete', 'transaction_id']
 
     def __str__(self):
         return str(self.id)

@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 
 from .models import *
-from .utils import cookieCart, cartData
+from .utils import cookieCart, cartData, guestOrder
 
 
 def store(request):
@@ -31,13 +31,15 @@ def store(request):
 
     data = cartData(request)
     cartItems = data['cartItems']
+    order = data['order']
+    items = data['items']
 
     context = {
         'categories': categories,
         'products': products,
         'cartItems': cartItems,
     }
-    return render(request, 'store/store.html', context)
+    return render(request, 'store.html', context)
 
 
 def cart(request):
@@ -53,7 +55,7 @@ def cart(request):
         'cartItems': cartItems,
     }
 
-    return render(request, 'store/cart.html', context)
+    return render(request, 'cart.html', context)
 
 
 def checkout(request):
@@ -69,7 +71,7 @@ def checkout(request):
         'cartItems': cartItems,
     }
 
-    return render(request, 'store/checkout.html', context)
+    return render(request, 'checkout.html', context)
 
 
 def updateItem(request):
@@ -104,33 +106,33 @@ def processOrder(request):
     transaction_id = datetime.now().timestamp()
     data = json.loads(request.body)
 
+    print(data)
+
     if request.user.is_authenticated:
         customer = request.user.customer
         print(customer)
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        total = int(data['form']['total'])
-        order.transaction_id = transaction_id
-
-        if total == order.get_cart_total:
-            order.complete = True
-        order.save()
-
-        if order.shipping == True:
-            ShippingAddress.objects.create(
-                customer=customer,
-                order=order,
-                phoneNumber=data['shipping']['phoneNumber'],
-                fullname=data['shipping']['fullname'],
-                region=data['shipping']['region'],
-                city=data['shipping']['city'],
-                neighborhood=data['shipping']['neighborhood'],
-                company_name=data['shipping']['company_name'],
-                additional=data['shipping']['additional'],
-            )
-
     else:
-        print('User is not logged in...')
+        customer, order = guestOrder(request, data)
 
-        print('COOKIES: ', request.COOKIES)
+    total = int(data['form']['total'])
+    order.transaction_id = transaction_id
+
+    if total == order.get_cart_total:
+        order.complete = True
+    order.save()
+
+    if order.shipping == True:
+        ShippingAddress.objects.create(
+            customer=customer,
+            order=order,
+            phoneNumber=data['shipping']['phoneNumber'],
+            fullname=data['shipping']['fullname'],
+            region=data['shipping']['region'],
+            city=data['shipping']['city'],
+            neighborhood=data['shipping']['neighborhood'],
+            company_name=data['shipping']['company_name'],
+            additional=data['shipping']['additional'],
+        )
 
     return JsonResponse('Payment complete', safe=False)

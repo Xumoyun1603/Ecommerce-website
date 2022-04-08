@@ -1,0 +1,67 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+
+    <section>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-9">
+                    <div class="row">
+                        {% for item in items %}
+                        <div class="col-12 mb-3">
+                            <div class="card shadow-lg p-2" style="width: 100%;">
+                                <div class="row">
+                                    <div class="col-4 col-lg-2">
+                                        <img src="{{ item.product.imageURL }}" class="img-fluid" alt="" style="height: 130px; width: 100%">
+                                    </div>
+                                    <div class="col-8 col-lg-5 align-items-center">
+                                        <h5 class="mt-2 mb-2">{{ item.product.name }}</h5>
+                                        <h6>Narxi: {{ item.product.price }} so'm</h6>
+                                        <button type="button" class="btn btn-warning mb-2">{{ item.product.brand }}</button>
+                                    </div>
+                                    <div class="col-4 col-md-3 col-lg-2 d-flex align-items-center justify-content-center">
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            <button data-product="{{ item.product.id }}" data-action="remove" type="button" class="btn btn-warning update-cart">-</button>
+                                            <input type="text" value="{{ item.quantity }}" class="form-control text-center" disabled>
+                                            <button data-product="{{ item.product.id }}" data-action="add" type="button" class="btn btn-warning update-cart">+</button>
+                                          </div>
+                                    </div>
+                                    <div class="col-8 col-md-8 col-lg-3 d-flex align-items-center justify-content-center">
+                                        <table class="table table-striped" style="width: 150px;">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="text-center text-warning">Jami (so'm):</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row" class="text-center">{{ item.get_total }}</th>
+                                                </tr>
+                                            </tbody>
+                                          </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-lg-10 col-xl-3">
+                    <div class="card shadow-lg">
+                        <a href="{% url 'store' %}" type="button" class="btn btn-outline-warning m-3" style="width: 160px;">&#x2190; Xarid qilish</a>
+                        <div class="m-3">
+                            <h6 class="text-center text-warning">Savatdagi mahsulotlar soni: <strong style="color: black">{{ order.get_cart_items }}</strong></h6>
+                            <h6 class="text-center">Jami miqdor:</h6>
+                            <h4 class="text-center">{{ order.get_cart_total }}</h4>
+                            <div class="d-flex justify-content-center mt-3 mb-2">
+                                <a href="{% url 'checkout' %}" type="button" class="btn btn-warning">Buyurtma berish</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock content %}

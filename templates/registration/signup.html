@@ -1,0 +1,20 @@
+{% extends 'registration/base.html' %}
+{% load crispy_forms_tags %}
+{% load crispy_forms_filters %}
+
+{% block title %}Register{% endblock title %}
+
+{% block content %}
+
+    <h2 class="text-center text-uppercase text-success">Ro'yxatdan o'tish</h2>
+    <form action="" method="post" class="p-4">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-outline-warning fs-5" type="submit">Sign up</button>
+    </form>
+
+    <p class="p-4 pt-0 mb-0">Allaqachon hisobingiz bormi?
+        <a class="btn btn-outline-primary fs-5" href="{% url 'login' %}">Login</a>
+    </p>
+
+{% endblock content %}
